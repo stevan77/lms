@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS - Dokumentacija</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #e0e7ff;
+            --purple: #7c3aed;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --sidebar-w: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--gray-800);
+            line-height: 1.7;
+            background: var(--gray-50);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            overflow-y: auto;
+            z-index: 50;
+            padding-bottom: 2rem;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-brand .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+        }
+
+        .sidebar-brand span {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #818cf8, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-section {
+            padding: 1rem 0.75rem 0;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.35);
+            padding: 0 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            transition: all 0.15s;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .sidebar a.active {
+            background: rgba(99,102,241,0.15);
+            color: white;
+            border-left: 3px solid var(--primary);
+            padding-left: calc(0.75rem - 3px);
+        }
+
+        .sidebar .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Main content */
+        .main {
+            margin-left: var(--sidebar-w);
+            padding: 2rem 3rem;
+            max-width: calc(100% - var(--sidebar-w));
+        }
+
+        /* Sections */
+        section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        h1 + .subtitle {
+            color: var(--gray-500);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        p { margin-bottom: 1rem; color: var(--gray-600); }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: var(--primary-light);
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 { margin-top: 0; font-size: 1rem; }
+        .card p { font-size: 0.875rem; margin: 0; }
+
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+
+        .stat .number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat .label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--gray-50); }
+
+        /* Tags */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag-indigo { background: var(--primary-light); color: var(--primary-dark); }
+        .tag-emerald { background: #d1fae5; color: #065f46; }
+        .tag-amber { background: #fef3c7; color: #92400e; }
+        .tag-red { background: #fee2e2; color: #991b1b; }
+        .tag-purple { background: #ede9fe; color: #5b21b6; }
+        .tag-gray { background: var(--gray-100); color: var(--gray-600); }
+
+        /* Code blocks */
+        code {
+            background: var(--gray-100);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: var(--primary-dark);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.25rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+            color: var(--gray-600);
+        }
+
+        li { margin-bottom: 0.5rem; }
+
+        /* Hierarchy tree */
+        .tree {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+        }
+
+        .tree-item.level-0 { font-weight: 700; color: var(--gray-900); }
+        .tree-item.level-1 { padding-left: 1.5rem; font-weight: 600; color: var(--gray-700); }
+        .tree-item.level-2 { padding-left: 3rem; color: var(--gray-600); }
+        .tree-item.level-3 { padding-left: 4.5rem; color: var(--gray-500); font-size: 0.85rem; }
+
+        /* Flow diagram */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .flow-step {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .flow-arrow {
+            color: var(--gray-400);
+            font-size: 1.2rem;
+        }
+
+        /* Alert boxes */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 1rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Scrollbar */
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="icon">L</div>
+        <span>LMS Docs</span>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Uvod</div>
+        <a href="#pregled" class="active" onclick="showSection('pregled')">
+            <span class="dot" style="background: var(--primary)"></span> Pregled sistema
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Uloge</div>
+        <a href="#admin" onclick="showSection('admin')">
+            <span class="dot" style="background: var(--amber)"></span> Admin
+        </a>
+        <a href="#nastavnik" onclick="showSection('nastavnik')">
+            <span class="dot" style="background: var(--emerald)"></span> Nastavnik
+        </a>
+        <a href="#ucenik" onclick="showSection('ucenik')">
+            <span class="dot" style="background: var(--primary)"></span> Ucenik
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Sadrzaj</div>
+        <a href="#editor" onclick="showSection('editor')">
+            <span class="dot" style="background: var(--purple)"></span> Rich Text Editor
+        </a>
+        <a href="#python" onclick="showSection('python')">
+            <span class="dot" style="background: #3b82f6"></span> Python vezbe
+        </a>
+        <a href="#matematika" onclick="showSection('matematika')">
+            <span class="dot" style="background: var(--amber)"></span> Matematika (LaTeX)
+        </a>
+        <a href="#jupyter" onclick="showSection('jupyter')">
+            <span class="dot" style="background: #f97316"></span> Jupyter Notebook
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Sistem</div>
+        <a href="#poruke" onclick="showSection('poruke')">
+            <span class="dot" style="background: var(--primary)"></span> Poruke i notifikacije
+        </a>
+        <a href="#godine" onclick="showSection('godine')">
+            <span class="dot" style="background: var(--emerald)"></span> Skolske godine
+        </a>
+        <a href="#jezici" onclick="showSection('jezici')">
+            <span class="dot" style="background: var(--amber)"></span> Jezici (i18n)
+        </a>
+        <a href="#upis" onclick="showSection('upis')">
+            <span class="dot" style="background: var(--purple)"></span> Upis ucenika
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Tehnicko</div>
+        <a href="#baza" onclick="showSection('baza')">
+            <span class="dot" style="background: var(--primary)"></span> Baza podataka
+        </a>
+        <a href="#api" onclick="showSection('api')">
+            <span class="dot" style="background: var(--emerald)"></span> Rute (API)
+        </a>
+        <a href="#fajlovi" onclick="showSection('fajlovi')">
+            <span class="dot" style="background: var(--gray-400)"></span> Struktura fajlova
+        </a>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+
+<!-- PREGLED -->
+<section id="pregled" class="active">
+    <h1>LMS - Sistem za upravljanje ucenjem</h1>
+    <p class="subtitle">Kompletna platforma za skole sa vise uloga, kursevima, zadacima i pracenjem napretka ucenika.</p>
+
+    <h2>Uloge korisnika</h2>
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-icon" style="background: #fef3c7; color: #d97706;">A</div>
+            <h3>Admin</h3>
+            <p>Upravlja razredima, kursevima, nastavnicima i ucenicima unutar svoje skole.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon" style="background: #d1fae5; color: #059669;">N</div>
+            <h3>Nastavnik</h3>
+            <p>Kreira sadrzaj lekcija, prati napredak ucenika, ocenjuje zadatke, salje poruke.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon" style="background: var(--primary-light); color: var(--primary);">U</div>
+            <h3>Ucenik</h3>
+            <p>Ucenje kroz lekcije, izvrsavanje zadataka, pracenje sopstvenog napretka.</p>
+        </div>
+    </div>
+
+    <h2>Kljucne mogucnosti</h2>
+    <div class="card-grid">
+        <div class="card">
+            <h3>Rich Text Editor</h3>
+            <p>TipTap editor sa formatiranjem, tabelama, slikama, blokovima koda i jos mnogo toga.</p>
+        </div>
+        <div class="card">
+            <h3>Python u browseru</h3>
+            <p>CodeMirror editor + Pyodide izvrsavanje. Podrska za input(), Pygame emulaciju i matplotlib.</p>
+        </div>
+        <div class="card">
+            <h3>LaTeX matematika</h3>
+            <p>KaTeX renderovanje formula. Podrska za sisteme jednacina, razlomke, matrice.</p>
+        </div>
+        <div class="card">
+            <h3>Jupyter Notebook</h3>
+            <p>Markdown + code celije sa izvrsavanjem, matplotlib graficima koji se renderuju kao PNG.</p>
+        </div>
+        <div class="card">
+            <h3>Zadaci i ocenjivanje</h3>
+            <p>Lekcije mogu biti zadaci. Ucenik predaje, nastavnik ocenjuje (1-5), vraca na doradu.</p>
+        </div>
+        <div class="card">
+            <h3>Poruke i notifikacije</h3>
+            <p>Direktne poruke, broadcast po razredu, zvonce sa notifikacijama u realnom vremenu.</p>
+        </div>
+    </div>
+
+    <h2>Test nalozi</h2>
+    <div class="alert alert-info">Svi nalozi koriste lozinku: <code>password</code></div>
+    <table>
+        <tr><th>Uloga</th><th>Email</th></tr>
+        <tr><td><span class="tag tag-amber">Admin</span></td><td><code>admin@lms.com</code></td></tr>
+        <tr><td><span class="tag tag-emerald">Nastavnik</span></td><td><code>teacher@lms.com</code></td></tr>
+        <tr><td><span class="tag tag-indigo">Ucenik</span></td><td><code>student@lms.com</code></td></tr>
+    </table>
+</section>
+
+<!-- ADMIN -->
+<section id="admin">
+    <h1>Admin</h1>
+    <p class="subtitle">Administrator skole. Upravlja razredima, kursevima, nastavnicima i ucenicima.</p>
+
+    <h2>Dashboard</h2>
+    <p>Statistika: broj razreda, kurseva, nastavnika i ucenika u skoli za izabranu skolsku godinu.</p>
+
+    <h2>Razredi (Grades)</h2>
+    <table>
+        <tr><th>Polje</th><th>Opis</th></tr>
+        <tr><td>Naziv</td><td>Npr. "6-1", "7a", "Clasa a 5-a"</td></tr>
+        <tr><td>Nivo</td><td>Broj razreda (1-8), koristi se za promociju</td></tr>
+        <tr><td>Jezik</td><td>Srpski, Rumunski ili Engleski - odredjuje jezik interfejsa za ucenike</td></tr>
+        <tr><td>Token za upis</td><td>Automatski generisan. Deljiv link za samostalni upis ucenika</td></tr>
+    </table>
+
+    <h2>Kursevi (Courses)</h2>
+    <p>Kreiranje kurseva sa nazivom i opisom. Kurs se dodeljuje:</p>
+    <ul>
+        <li><strong>Razredu</strong> - Svi ucenici razreda dobijaju pristup kursu. Bira se i nastavnik.</li>
+        <li><strong>Pojedinacnom uceniku</strong> - Individualna dodela sa filterom po razredu. Bira se nastavnik.</li>
+    </ul>
+    <div class="alert alert-info">Na stranici za uredjivanje kursa, sekcija "Dodeljeni razredi" prikazuje razrede (ljubicasti badge), a "Dodeljeni ucenici" prikazuje individualne dodele (zeleni badge).</div>
+
+    <h2>Nastavnici i ucenici</h2>
+    <p>CRUD za nastavnike i ucenike. Ucenici se dodeljuju razredima. Nastavnici se dodeljuju kursevima preko Course-Grade veze.</p>
+
+    <h2>Selektor skolske godine</h2>
+    <p>U headeru se nalazi dropdown za izbor skolske godine. Svi podaci (razredi, kursevi, ucenici) se filtriraju po izabranoj godini. Zakljucane godine su read-only.</p>
+</section>
+
+<!-- NASTAVNIK -->
+<section id="nastavnik">
+    <h1>Nastavnik</h1>
+    <p class="subtitle">Kreira sadrzaj, prati napredak, ocenjuje zadatke, komunicira sa ucenicima.</p>
+
+    <h2>Dashboard</h2>
+    <p>Prikaz svih kurseva sa brojem lekcija i ucenika. Za svaki kurs prikazani su dodeljeni razredi (ljubicasto) i individualni ucenici (zeleno). Linkovi za napredak po razredu/uceniku.</p>
+
+    <h2>Upravljanje lekcijama</h2>
+    <p>Hijerarhijska struktura kursa:</p>
+    <div class="tree">
+        <div class="tree-item level-0">Kurs</div>
+        <div class="tree-item level-1">Kapitola (Chapter)</div>
+        <div class="tree-item level-2">Podkapitola (Subchapter)</div>
+        <div class="tree-item level-3">Lekcija (Lesson)</div>
+    </div>
+    <ul>
+        <li>Kapitole i podkapitole se kreiraju inline (naziv + Enter)</li>
+        <li>Lekcije se kreiraju na posebnoj stranici sa Rich Text Editorom</li>
+        <li>Drag & drop za promenu redosleda kapitola, podkapitola i lekcija</li>
+        <li>Preview dugme za prikaz lekcije iz perspektive ucenika</li>
+        <li>Lekcija moze biti oznacena kao <span class="tag tag-amber">Zadatak</span></li>
+    </ul>
+
+    <h2>Pracenje napretka</h2>
+    <p>Stranica sa karticama za svakog ucenika. Svaka kartica prikazuje mini tackice za svaku lekciju:</p>
+    <ul>
+        <li><span style="color: var(--gray-400);">Siva</span> = Nije zapoceto</li>
+        <li><span style="color: var(--amber);">Zuta</span> = U toku</li>
+        <li><span style="color: var(--emerald);">Zelena</span> = Zavrseno</li>
+    </ul>
+
+    <h2>Zadaci (Submissions)</h2>
+    <p>Dva nacina pristupa zadacima:</p>
+    <ul>
+        <li><strong>Per lekcija</strong> - Iz lekcije klik na "Submissions" dugme za konkretni razred</li>
+        <li><strong>Globalni pregled</strong> - "Zadaci" u sidebaru (sve predaje svih ucenika)</li>
+    </ul>
+    <p>Globalni pregled ima filtere po razredu i imenu ucenika. Podrazumevano prikazuje samo neocenjene. Dugme "Prikazi ocenjene" toggleuje prikaz.</p>
+    <p>Za svaku predaju nastavnik moze:</p>
+    <ul>
+        <li><strong>Oceniti</strong> (1-5) sa feedback-om - lekcija se automatski oznacava kao zavrsena</li>
+        <li><strong>Vratiti na doradu</strong> sa komentarom - ucenik ponovo predaje</li>
+    </ul>
+
+    <h2>Poruke</h2>
+    <p>Direktne poruke uceniku ili broadcast celom razredu. Inbox sa filterima po uceniku/razredu.</p>
+</section>
+
+<!-- UCENIK -->
+<section id="ucenik">
+    <h1>Ucenik</h1>
+    <p class="subtitle">Ucenje, predaja zadataka, pracenje napretka.</p>
+
+    <h2>Moji kursevi</h2>
+    <p>Prikaz svih kurseva u kartici sa gradient headerom. Progress bar i broj zavrsenih lekcija za svaki kurs. Kursevi dolaze iz dva izvora:</p>
+    <ul>
+        <li>Preko razreda (svi kursevi dodeljeni razredu)</li>
+        <li>Individualna dodela (badge "Individualno")</li>
+    </ul>
+
+    <h2>Ucenje lekcije</h2>
+    <p>Stranica kursa prikazuje kapitole/podkapitole/lekcije sa collapsible strukturom. Aktivna lekcija se automatski otvara i skroluje do nje pri ucitavanju.</p>
+    <p>Tok ucenja:</p>
+    <div class="flow">
+        <div class="flow-step" style="border-color: var(--gray-300);">Nije zapoceto</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step" style="border-color: var(--amber);">U toku</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step" style="border-color: var(--emerald);">Zavrseno</div>
+    </div>
+    <ul>
+        <li>Otvaranje lekcije automatski je oznacava kao "U toku"</li>
+        <li>Dugme "Oznaci kao zavrseno" - automatski otvara sledecu lekciju sa scroll-om</li>
+        <li>"Vrati u toku" - moze ponisti zavrsetak (undo)</li>
+    </ul>
+
+    <h2>Zadaci</h2>
+    <p>Zadaci se predaju inline u lekciji (textarea + dugme). Statusi predaje:</p>
+    <table>
+        <tr><th>Status</th><th>Opis</th></tr>
+        <tr><td><span class="tag tag-amber">Predato</span></td><td>Ceka pregled nastavnika</td></tr>
+        <tr><td><span class="tag tag-emerald">Ocenjeno</span></td><td>Nastavnik ocenio (1-5), lekcija automatski zavrsena</td></tr>
+        <tr><td><span class="tag tag-purple">Pregledano</span></td><td>Nastavnik pregledao bez ocene</td></tr>
+        <tr><td><span class="tag tag-amber" style="background: #ffedd5; color: #9a3412;">Vraceno</span></td><td>Nastavnik vratio na doradu - ucenik ponovo predaje</td></tr>
+    </table>
+
+    <h2>Moji zadaci</h2>
+    <p>"Moji zadaci" u sidebaru prikazuje sve predaje sa filterima po kursu i statusu. Statistika: ukupno, ceka pregled, ocenjeno, vraceno. Klik otvara detalje sa ocenom i feedback-om.</p>
+
+    <h2>Pitaj nastavnika</h2>
+    <p>Na SVAKOJ lekciji (ne samo zadacima) postoji dugme "Pitaj nastavnika". Inline forma sa textarea - poruka se salje bez napustanja stranice. Potvrdna poruka "Poruka poslata!" na 5 sekundi.</p>
+</section>
+
+<!-- EDITOR -->
+<section id="editor">
+    <h1>Rich Text Editor</h1>
+    <p class="subtitle">TipTap editor sa naprednim mogucnostima za kreiranje sadrzaja lekcija.</p>
+
+    <h2>Osnovne mogucnosti</h2>
+    <div class="card-grid">
+        <div class="card"><h3>Formatiranje teksta</h3><p>Bold, italic, underline, strikethrough, highlight, subscript, superscript</p></div>
+        <div class="card"><h3>Naslovi</h3><p>H1, H2, H3 - hijerarhijski naslovi za strukturu</p></div>
+        <div class="card"><h3>Liste</h3><p>Bullet liste, numerisane liste, ugnjezdene liste</p></div>
+        <div class="card"><h3>Blok citati</h3><p>Blockquote za isticanje teksta</p></div>
+        <div class="card"><h3>Tabele</h3><p>Dodavanje i formatiranje tabela sa redovima i kolonama</p></div>
+        <div class="card"><h3>Linkovi i slike</h3><p>Umetanje URL linkova i slika</p></div>
+        <div class="card"><h3>Code blokovi</h3><p>Syntax highlighting (highlight.js + lowlight)</p></div>
+        <div class="card"><h3>Horizontalna linija</h3><p>Razdvajanje sekcija</p></div>
+    </div>
+
+    <h2>Napredne ekstenzije</h2>
+    <table>
+        <tr><th>Ekstenzija</th><th>Opis</th><th>Komponenta</th></tr>
+        <tr><td><span class="tag tag-indigo">MathExtension</span></td><td>LaTeX formule (KaTeX)</td><td>MathNodeView.vue</td></tr>
+        <tr><td><span class="tag tag-emerald">CodeExerciseExtension</span></td><td>Python vezbe sa izvrsavanjem</td><td>CodeExerciseNodeView.vue</td></tr>
+        <tr><td><span class="tag tag-purple">NotebookExtension</span></td><td>Jupyter notebook celije</td><td>NotebookNodeView.vue</td></tr>
+    </table>
+
+    <h2>Renderovanje za ucenika</h2>
+    <p>Komponenta <code>LessonContent.vue</code> parsira HTML sadrzaj i automatski prepoznaje:</p>
+    <ul>
+        <li><code>data-code-exercise</code> atribute - renderuje CodeExerciseRunner</li>
+        <li><code>data-notebook</code> atribute - renderuje NotebookRunner</li>
+        <li><code>\[...\]</code> delimitere - renderuje KaTeX matematiku</li>
+        <li>Obican HTML - renderuje standardno</li>
+    </ul>
+</section>
+
+<!-- PYTHON -->
+<section id="python">
+    <h1>Python vezbe</h1>
+    <p class="subtitle">Interaktivne Python vezbe sa izvrsavanjem u browseru.</p>
+
+    <h2>Kako radi</h2>
+    <div class="flow">
+        <div class="flow-step">Nastavnik kreira vezbu u editoru</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Starter code + instrukcije</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Ucenik menja kod</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Pyodide izvrsava u browseru</div>
+    </div>
+
+    <h2>Mogucnosti</h2>
+    <ul>
+        <li><strong>CodeMirror editor</strong> - Syntax highlighting, line numbers, Python autocomplete</li>
+        <li><strong>Pyodide (WASM)</strong> - Kompletan Python interpreter u browseru, bez servera</li>
+        <li><strong>input() podrska</strong> - Prompt dialog za korisnicki unos</li>
+        <li><strong>Prijateljske greske</strong> - Python greske prevedene na srpski za decu</li>
+        <li><strong>Reset dugme</strong> - Vracanje na originalni starter kod</li>
+    </ul>
+
+    <h2>Pygame emulator</h2>
+    <p>Pygame shim (<code>public/pygame-shim.py</code>) koji mapira Pygame pozive na HTML Canvas:</p>
+    <ul>
+        <li><code>pygame.draw.line()</code> - Linije</li>
+        <li><code>pygame.draw.circle()</code> - Krugovi</li>
+        <li><code>pygame.draw.rect()</code> - Pravougaonici</li>
+        <li><code>pygame.draw.ellipse()</code> - Elipse</li>
+        <li><code>pygame.draw.polygon()</code> - Poligoni</li>
+        <li><code>pygame.draw.arc()</code> - Lukovi</li>
+        <li>Tekst renderovanje na Canvas-u</li>
+    </ul>
+</section>
+
+<!-- MATEMATIKA -->
+<section id="matematika">
+    <h1>Matematika (LaTeX)</h1>
+    <p class="subtitle">KaTeX renderovanje matematickih formula u lekcijama.</p>
+
+    <h2>Nacini koriscenja</h2>
+    <table>
+        <tr><th>Nacin</th><th>Sintaksa</th><th>Rezultat</th></tr>
+        <tr><td>Inline formula</td><td><code>\[x^2 + y^2 = z^2\]</code></td><td>Formula u tekstu</td></tr>
+        <tr><td>Math blok u editoru</td><td>MathExtension node</td><td>Izolovani math blok</td></tr>
+        <tr><td>Mesoviti tekst+math</td><td><code>\[...\]</code> delimiteri u HTML-u</td><td>Tekst sa formulama</td></tr>
+    </table>
+
+    <h2>Primeri sadrzaja</h2>
+    <ul>
+        <li>Sistemi linearnih jednacina sa <code>\begin{cases}</code></li>
+        <li>Razlomci, koreni, eksponenti</li>
+        <li>Matrice i determinante</li>
+        <li>Step-by-step resenja (5 koraka: nepoznate, jednacine, sistem, resavanje, provera)</li>
+    </ul>
+
+    <div class="alert alert-warning">U HTML atributima, <code>\begin{cases}</code> zahteva <code>\\\\</code> za prelom reda (dvostruko eskejpovanje).</div>
+</section>
+
+<!-- JUPYTER -->
+<section id="jupyter">
+    <h1>Jupyter Notebook</h1>
+    <p class="subtitle">Interaktivni notebook sa markdown i code celijama.</p>
+
+    <h2>Mogucnosti</h2>
+    <ul>
+        <li><strong>Markdown celije</strong> - Tekst sa formatiranjem</li>
+        <li><strong>Code celije</strong> - Python kod sa izvrsavanjem (Pyodide)</li>
+        <li><strong>matplotlib</strong> - Grafici se renderuju kao PNG slike</li>
+        <li><strong>Run All</strong> - Izvrsavanje svih celija odjednom</li>
+        <li><strong>Per-cell execution</strong> - Izvrsavanje pojedinacne celije</li>
+        <li>Output se prikazuje ispod svake celije</li>
+    </ul>
+</section>
+
+<!-- PORUKE -->
+<section id="poruke">
+    <h1>Poruke i notifikacije</h1>
+    <p class="subtitle">Komunikacija izmedju nastavnika i ucenika.</p>
+
+    <h2>Poruke</h2>
+    <ul>
+        <li><strong>Direktna poruka</strong> - Nastavnik &harr; ucenik, obostrana komunikacija</li>
+        <li><strong>Broadcast</strong> - Nastavnik salje celom razredu, sa tabelom ko je procitao</li>
+        <li><strong>Inbox</strong> - Filtere po uceniku (za nastavnika) ili kursu</li>
+        <li><strong>Brisanje</strong> - Soft delete po korisniku (drugi korisnik i dalje vidi poruku)</li>
+        <li><strong>Badge</strong> - Broj neprocitanih poruka u sidebaru</li>
+    </ul>
+
+    <h2>Notifikacije</h2>
+    <p>Zvonce u headeru sa dropdown listom. Tipovi notifikacija:</p>
+    <table>
+        <tr><th>Tip</th><th>Primalac</th><th>Okidac</th></tr>
+        <tr><td>submission_received</td><td>Nastavnik</td><td>Ucenik predao zadatak</td></tr>
+        <tr><td>submission_graded</td><td>Ucenik</td><td>Nastavnik ocenio zadatak</td></tr>
+        <tr><td>submission_returned</td><td>Ucenik</td><td>Nastavnik vratio zadatak</td></tr>
+        <tr><td>submission_reviewed</td><td>Ucenik</td><td>Nastavnik pregledao zadatak</td></tr>
+        <tr><td>new_message</td><td>Oba</td><td>Primljena nova poruka</td></tr>
+    </table>
+    <ul>
+        <li>Oznaci kao procitano (pojedinacno ili sve)</li>
+        <li>Obrisi sve notifikacije</li>
+        <li>Otvaranje poruke automatski oznacava vezanu notifikaciju kao procitanu</li>
+    </ul>
+</section>
+
+<!-- SKOLSKE GODINE -->
+<section id="godine">
+    <h1>Skolske godine</h1>
+    <p class="subtitle">Upravljanje skolskim godinama sa promocijom ucenika.</p>
+
+    <h2>Struktura</h2>
+    <table>
+        <tr><th>Polje</th><th>Opis</th></tr>
+        <tr><td>name</td><td>Npr. "2025/2026"</td></tr>
+        <tr><td>start_date / end_date</td><td>Datum pocetka i kraja</td></tr>
+        <tr><td>is_active</td><td>Samo jedna godina moze biti aktivna</td></tr>
+        <tr><td>is_locked</td><td>Zakljucane godine su read-only</td></tr>
+    </table>
+
+    <h2>Filtriranje po godini</h2>
+    <p>Selektor u headeru (vidljiv adminu i nastavniku). Svi podaci se filtriraju:</p>
+    <ul>
+        <li>Razredi imaju <code>school_year_id</code></li>
+        <li>Kursevi se filtriraju preko razreda</li>
+        <li>Individualne dodele imaju direktan <code>school_year_id</code></li>
+        <li>Admin dashboard, teacher dashboard, student dashboard - sve je filtrirano</li>
+    </ul>
+
+    <h2>Zatvaranje godine (wizard)</h2>
+    <ol>
+        <li><strong>Preview</strong> - Pregled svih promena pre zatvaranja</li>
+        <li><strong>Promocija</strong> - Level ucenika + 1 (npr. 5. razred &rarr; 6. razred)</li>
+        <li><strong>Maturanti</strong> - Ucenici 8. razreda dobijaju status "graduated"</li>
+        <li><strong>Zakljucivanje</strong> - Stara godina locked, nova kreirana i aktivirana</li>
+    </ol>
+</section>
+
+<!-- JEZICI -->
+<section id="jezici">
+    <h1>Jezici (i18n)</h1>
+    <p class="subtitle">Kompletna trojezicna podrska.</p>
+
+    <h2>Podrzani jezici</h2>
+    <table>
+        <tr><th>Kod</th><th>Jezik</th><th>Fajl</th></tr>
+        <tr><td><code>sr</code></td><td>Srpski (latinica)</td><td><code>lang/sr.json</code></td></tr>
+        <tr><td><code>ro</code></td><td>Rumunski</td><td><code>lang/ro.json</code></td></tr>
+        <tr><td><code>en</code></td><td>Engleski</td><td><code>lang/en.json</code></td></tr>
+    </table>
+    <p>Ukupno <strong>363 kljuca za prevod</strong> po jeziku.</p>
+
+    <h2>Kako radi</h2>
+    <ul>
+        <li><strong>Vue strana</strong> - <code>useTranslations</code> composable sa <code>t('key')</code> funkcijom</li>
+        <li><strong>Laravel strana</strong> - <code>SetLocale</code> middleware cita korisnikov jezik</li>
+        <li><strong>Promena jezika</strong> - Dropdown u sidebaru, cuva se u bazi (<code>users.locale</code>)</li>
+        <li><strong>Auto-detekcija</strong> - Razred ima <code>locale</code> polje. Upis ucenika automatski postavlja jezik.</li>
+    </ul>
+
+    <div class="alert alert-info">Kursevi na razlicitim jezicima: "Osnove programiranja u Python-u" (SR) i "Bazele programarii in Python" (RO) - isti sadrzaj kompletno preveden ukljucujuci print stringove, komentare i imena promenljivih u kodu.</div>
+</section>
+
+<!-- UPIS -->
+<section id="upis">
+    <h1>Upis ucenika</h1>
+    <p class="subtitle">Samostalni upis ucenika putem linka.</p>
+
+    <h2>Tok upisa</h2>
+    <div class="flow">
+        <div class="flow-step">Admin kreira razred</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Generise se token</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Deli link ucenicima</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Ucenik se registruje</div>
+    </div>
+
+    <p>Svaki razred ima jedinstven <code>enrollment_token</code>. URL format: <code>/enroll/{token}</code></p>
+    <p>Pri registraciji, sistem automatski:</p>
+    <ul>
+        <li>Kreira korisnicki nalog (ucenik)</li>
+        <li>Dodeljuje uceniku razred</li>
+        <li>Postavlja skolu</li>
+        <li>Postavlja jezik prema podesavanju razreda</li>
+    </ul>
+</section>
+
+<!-- BAZA -->
+<section id="baza">
+    <h1>Baza podataka</h1>
+    <p class="subtitle">MySQL baza sa 18 tabela i 20 migracija.</p>
+
+    <h2>Dijagram tabela</h2>
+    <table>
+        <tr><th>Tabela</th><th>Opis</th><th>Kljucne kolone</th></tr>
+        <tr><td><code>schools</code></td><td>Skole</td><td>id, name, address</td></tr>
+        <tr><td><code>users</code></td><td>Korisnici (sve uloge)</td><td>id, name, email, role, school_id, locale</td></tr>
+        <tr><td><code>grades</code></td><td>Razredi</td><td>id, name, level, school_id, school_year_id, locale, enrollment_token</td></tr>
+        <tr><td><code>courses</code></td><td>Kursevi</td><td>id, name, description, school_id</td></tr>
+        <tr><td><code>course_grade</code></td><td>Kurs &harr; Razred/Ucenik</td><td>id, course_id, grade_id (nullable), student_id (nullable), teacher_id, school_year_id</td></tr>
+        <tr><td><code>student_grade</code></td><td>Ucenik &harr; Razred</td><td>student_id, grade_id</td></tr>
+        <tr><td><code>chapters</code></td><td>Kapitole kursa</td><td>id, course_id, title, order</td></tr>
+        <tr><td><code>subchapters</code></td><td>Podkapitole</td><td>id, chapter_id, title, order</td></tr>
+        <tr><td><code>lessons</code></td><td>Lekcije</td><td>id, course_id, subchapter_id, title, content, order, is_assignment</td></tr>
+        <tr><td><code>student_progress</code></td><td>Napredak ucenika</td><td>student_id, lesson_id, course_grade_id, status, completed_at</td></tr>
+        <tr><td><code>submissions</code></td><td>Predaje zadataka</td><td>student_id, lesson_id, course_grade_id, content, status, grade, feedback</td></tr>
+        <tr><td><code>notifications</code></td><td>Notifikacije</td><td>user_id, type, title, message, link, read_at</td></tr>
+        <tr><td><code>messages</code></td><td>Poruke</td><td>sender_id, recipient_id, grade_id, subject, body, is_broadcast</td></tr>
+        <tr><td><code>message_reads</code></td><td>Procitanost poruka</td><td>message_id, user_id, read_at</td></tr>
+        <tr><td><code>message_deletions</code></td><td>Obrisane poruke (po korisniku)</td><td>message_id, user_id</td></tr>
+        <tr><td><code>school_years</code></td><td>Skolske godine</td><td>id, name, start_date, end_date, is_active, is_locked</td></tr>
+    </table>
+
+    <h2>Kljucne relacije</h2>
+    <div class="tree">
+        <div class="tree-item level-0">School</div>
+        <div class="tree-item level-1">&rarr; Users (admin, teacher, student)</div>
+        <div class="tree-item level-1">&rarr; Grades (sa school_year_id)</div>
+        <div class="tree-item level-2">&rarr; StudentGrade (pivot: student &harr; grade)</div>
+        <div class="tree-item level-1">&rarr; Courses</div>
+        <div class="tree-item level-2">&rarr; CourseGrade (pivot: course &harr; grade/student + teacher)</div>
+        <div class="tree-item level-2">&rarr; Chapters &rarr; Subchapters &rarr; Lessons</div>
+        <div class="tree-item level-3">&rarr; StudentProgress (per student, per lesson)</div>
+        <div class="tree-item level-3">&rarr; Submissions (per student, per assignment)</div>
+    </div>
+</section>
+
+<!-- RUTE -->
+<section id="api">
+    <h1>Rute (API)</h1>
+    <p class="subtitle">92 rute organizovane po ulogama.</p>
+
+    <h2>Admin rute <span class="tag tag-amber">/admin/*</span></h2>
+    <table>
+        <tr><th>Metoda</th><th>URL</th><th>Opis</th></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/admin/grades</td><td>Lista razreda</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/admin/grades</td><td>Kreiraj razred</td></tr>
+        <tr><td><span class="tag tag-amber">PUT</span></td><td>/admin/grades/{id}</td><td>Azuriraj razred</td></tr>
+        <tr><td><span class="tag tag-red">DELETE</span></td><td>/admin/grades/{id}</td><td>Obrisi razred</td></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/admin/courses</td><td>Lista kurseva</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/admin/courses</td><td>Kreiraj kurs</td></tr>
+        <tr><td><span class="tag tag-amber">PUT</span></td><td>/admin/courses/{id}</td><td>Azuriraj kurs</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/admin/course-grades</td><td>Dodeli kurs razredu/uceniku</td></tr>
+        <tr><td><span class="tag tag-red">DELETE</span></td><td>/admin/course-grades/{id}</td><td>Ukloni dodelu</td></tr>
+        <tr><td colspan="3"><em>+ CRUD za teachers, students (ista struktura)</em></td></tr>
+    </table>
+
+    <h2>Nastavnik rute <span class="tag tag-emerald">/teacher/*</span></h2>
+    <table>
+        <tr><th>Metoda</th><th>URL</th><th>Opis</th></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/teacher/courses/{id}/lessons</td><td>Lista lekcija kursa</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/teacher/courses/{id}/chapters</td><td>Kreiraj kapitolu</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/teacher/chapters/{id}/subchapters</td><td>Kreiraj podkapitolu</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/teacher/subchapters/{id}/lessons</td><td>Kreiraj lekciju</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/teacher/reorder</td><td>Promeni redosled (drag & drop)</td></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/teacher/progress/{courseGrade}</td><td>Napredak ucenika</td></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/teacher/submissions</td><td>Svi zadaci (globalno)</td></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/teacher/submissions/{lesson}/{cg}</td><td>Zadaci per lekcija</td></tr>
+        <tr><td><span class="tag tag-amber">PUT</span></td><td>/teacher/submissions/{id}</td><td>Oceni/vrati zadatak</td></tr>
+    </table>
+
+    <h2>Ucenik rute <span class="tag tag-indigo">/student/*</span></h2>
+    <table>
+        <tr><th>Metoda</th><th>URL</th><th>Opis</th></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/student/courses</td><td>Moji kursevi</td></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/student/courses/{courseGrade}</td><td>Prikaz kursa (lekcije)</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/student/progress/{lesson}/{cg}</td><td>Azuriraj napredak</td></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/student/submissions</td><td>Moji zadaci</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/student/submissions/{lesson}/{cg}</td><td>Predaj zadatak</td></tr>
+    </table>
+
+    <h2>Ostale rute</h2>
+    <table>
+        <tr><th>Metoda</th><th>URL</th><th>Opis</th></tr>
+        <tr><td><span class="tag tag-emerald">GET</span></td><td>/enroll/{token}</td><td>Stranica za upis</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/enroll/{token}</td><td>Registracija ucenika</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/language</td><td>Promena jezika</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/impersonate/{user}</td><td>Impersonacija</td></tr>
+        <tr><td><span class="tag tag-indigo">POST</span></td><td>/messages</td><td>Posalji poruku</td></tr>
+    </table>
+</section>
+
+<!-- FAJLOVI -->
+<section id="fajlovi">
+    <h1>Struktura fajlova</h1>
+    <p class="subtitle">Organizacija kljucnih fajlova u projektu.</p>
+
+    <h2>Backend (Laravel)</h2>
+    <div class="tree">
+        <div class="tree-item level-0">app/</div>
+        <div class="tree-item level-1">Http/Controllers/ <span class="tag tag-gray">23 kontrolera</span></div>
+        <div class="tree-item level-2">ChapterController, CourseController, CourseGradeController...</div>
+        <div class="tree-item level-2">CourseViewController, DashboardController, EnrollmentController...</div>
+        <div class="tree-item level-2">LessonController, MessageController, NotificationController...</div>
+        <div class="tree-item level-2">StudentProgressController, SubmissionController...</div>
+        <div class="tree-item level-1">Http/Middleware/</div>
+        <div class="tree-item level-2">CheckRole.php, SetLocale.php, HandleInertiaRequests.php</div>
+        <div class="tree-item level-1">Models/ <span class="tag tag-gray">15 modela</span></div>
+        <div class="tree-item level-2">School, User, Grade, Course, CourseGrade</div>
+        <div class="tree-item level-2">Chapter, Subchapter, Lesson, StudentProgress, Submission</div>
+        <div class="tree-item level-2">Notification, Message, MessageRead, MessageDeletion, SchoolYear</div>
+    </div>
+
+    <h2>Frontend (Vue)</h2>
+    <div class="tree">
+        <div class="tree-item level-0">resources/js/</div>
+        <div class="tree-item level-1">Layouts/</div>
+        <div class="tree-item level-2">AuthenticatedLayout.vue - sidebar + header + notifikacije</div>
+        <div class="tree-item level-2">GuestLayout.vue - tamni login/register</div>
+        <div class="tree-item level-1">Pages/ <span class="tag tag-gray">52 stranice</span></div>
+        <div class="tree-item level-2">Admin/ - Courses, Grades, Students, Teachers, Dashboard</div>
+        <div class="tree-item level-2">Teacher/ - Dashboard, Lessons, Progress, Submissions</div>
+        <div class="tree-item level-2">Student/ - Dashboard, Courses, Submissions</div>
+        <div class="tree-item level-2">Superadmin/ - Dashboard, Schools, SchoolYears, Superadmins</div>
+        <div class="tree-item level-2">Messages/ - Inbox, Create, Show</div>
+        <div class="tree-item level-1">Components/</div>
+        <div class="tree-item level-2">Editor/ - RichTextEditor, MathExtension, CodeExerciseExtension, NotebookExtension</div>
+        <div class="tree-item level-2">CodeExerciseRunner.vue, NotebookRunner.vue, LessonContent.vue</div>
+        <div class="tree-item level-2">InputField, SelectField, ButtonPrimary, DeleteConfirmModal, ProgressBar...</div>
+        <div class="tree-item level-1">Composables/</div>
+        <div class="tree-item level-2">useTranslations.js - t('key') helper za i18n</div>
+    </div>
+
+    <h2>Ostalo</h2>
+    <div class="tree">
+        <div class="tree-item level-0">database/migrations/ <span class="tag tag-gray">20 migracija</span></div>
+        <div class="tree-item level-0">lang/ <span class="tag tag-gray">3 jezika x 363 kljuca</span></div>
+        <div class="tree-item level-1">en.json, sr.json, ro.json</div>
+        <div class="tree-item level-0">routes/web.php <span class="tag tag-gray">92 rute</span></div>
+        <div class="tree-item level-0">public/pygame-shim.py <span class="tag tag-gray">Pygame Canvas emulator</span></div>
+    </div>
+</section>
+
+</div>
+
+<script>
+function showSection(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+
+    const section = document.getElementById(id);
+    if (section) section.classList.add('active');
+
+    const link = document.querySelector(`.sidebar a[href="#${id}"]`);
+    if (link) link.classList.add('active');
+
+    window.scrollTo(0, 0);
+
+    // Update URL hash without scrolling
+    history.replaceState(null, null, '#' + id);
+}
+
+// Handle initial hash
+window.addEventListener('load', () => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) showSection(hash);
+});
+</script>
+
+</body>
+</html>
