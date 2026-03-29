@@ -35,6 +35,11 @@ const emit = defineEmits(['update:modelValue']);
 
 const showLinkModal = ref(false);
 const linkUrl = ref('');
+const showImageModal = ref(false);
+const imageUrl = ref('');
+const imagePreview = ref(null);
+const imageFile = ref(null);
+const imageUploading = ref(false);
 
 const editor = useEditor({
     content: props.modelValue,
@@ -74,6 +79,31 @@ const editor = useEditor({
         attributes: {
             class: 'prose prose-sm sm:prose max-w-none focus:outline-none min-h-[300px] px-4 py-3',
         },
+        handlePaste(view, event) {
+            const items = event.clipboardData?.items;
+            if (!items) return false;
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    event.preventDefault();
+                    const file = item.getAsFile();
+                    if (file) uploadAndInsertImage(file);
+                    return true;
+                }
+            }
+            return false;
+        },
+        handleDrop(view, event) {
+            const files = event.dataTransfer?.files;
+            if (!files?.length) return false;
+            for (const file of files) {
+                if (file.type.startsWith('image/')) {
+                    event.preventDefault();
+                    uploadAndInsertImage(file);
+                    return true;
+                }
+            }
+            return false;
+        },
     },
 });
 
@@ -102,10 +132,76 @@ const openLinkModal = () => {
     showLinkModal.value = true;
 };
 
+const uploadAndInsertImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+        const response = await fetch('/upload-image', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                'Accept': 'application/json',
+            },
+            body: formData,
+        });
+        const data = await response.json();
+        if (data.url) {
+            editor.value.chain().focus().setImage({ src: data.url }).run();
+        }
+    } catch (e) {
+        console.error('Image upload failed:', e);
+    }
+};
+
 const addImage = () => {
-    const url = window.prompt('Image URL:');
-    if (url) {
-        editor.value.chain().focus().setImage({ src: url }).run();
+    showImageModal.value = true;
+    imageUrl.value = '';
+    imagePreview.value = null;
+    imageFile.value = null;
+};
+
+const onImageFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        imageFile.value = file;
+        imagePreview.value = URL.createObjectURL(file);
+    }
+};
+
+const onImagePaste = (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+        if (item.type.startsWith('image/')) {
+            e.preventDefault();
+            const file = item.getAsFile();
+            if (file) {
+                imageFile.value = file;
+                imagePreview.value = URL.createObjectURL(file);
+            }
+            return;
+        }
+    }
+};
+
+const onImageDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer?.files?.[0];
+    if (file?.type.startsWith('image/')) {
+        imageFile.value = file;
+        imagePreview.value = URL.createObjectURL(file);
+    }
+};
+
+const insertImage = async () => {
+    if (imageFile.value) {
+        imageUploading.value = true;
+        await uploadAndInsertImage(imageFile.value);
+        imageUploading.value = false;
+        showImageModal.value = false;
+    } else if (imageUrl.value) {
+        editor.value.chain().focus().setImage({ src: imageUrl.value }).run();
+        showImageModal.value = false;
     }
 };
 
@@ -283,6 +379,66 @@ const isActive = (name, attrs = {}) => editor.value?.isActive(name, attrs);
                     <div class="flex justify-end gap-2 mt-4">
                         <button type="button" @click="showLinkModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
                         <button type="button" @click="setLink" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </Teleport>
+
+        <!-- Image modal -->
+        <Teleport to="body">
+            <div v-if="showImageModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="showImageModal = false">
+                <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Dodaj sliku</h3>
+
+                    <!-- Drop zone / paste area -->
+                    <div
+                        @paste="onImagePaste"
+                        @drop="onImageDrop"
+                        @dragover.prevent
+                        @click="$refs.imageInput.click()"
+                        tabindex="0"
+                        class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 transition-colors focus:outline-none focus:border-indigo-500"
+                    >
+                        <div v-if="imagePreview" class="mb-3">
+                            <img :src="imagePreview" class="max-h-48 mx-auto rounded-lg shadow-sm" />
+                        </div>
+                        <div v-else>
+                            <svg class="w-10 h-10 mx-auto text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M2.25 18V6a2.25 2.25 0 012.25-2.25h15A2.25 2.25 0 0121.75 6v12A2.25 2.25 0 0119.5 20.25h-15A2.25 2.25 0 012.25 18z" />
+                            </svg>
+                            <p class="text-sm text-gray-500">Klikni, prevuci sliku ovde, ili <strong>Ctrl+V</strong> za paste</p>
+                        </div>
+                        <input ref="imageInput" type="file" accept="image/*" class="hidden" @change="onImageFileChange" />
+                    </div>
+
+                    <!-- URL option -->
+                    <div class="mt-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="h-px bg-gray-200 flex-1"></div>
+                            <span class="text-xs text-gray-400">ili unesi URL</span>
+                            <div class="h-px bg-gray-200 flex-1"></div>
+                        </div>
+                        <input
+                            v-model="imageUrl"
+                            type="url"
+                            placeholder="https://example.com/slika.jpg"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                            @keydown.enter="insertImage"
+                        />
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button type="button" @click="showImageModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Otkazi</button>
+                        <button
+                            type="button"
+                            @click="insertImage"
+                            :disabled="imageUploading || (!imageFile && !imageUrl)"
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span v-if="imageUploading">Optimizujem...</span>
+                            <span v-else>Dodaj</span>
+                        </button>
                     </div>
                 </div>
             </div>

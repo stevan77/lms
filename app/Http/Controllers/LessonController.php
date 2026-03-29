@@ -87,11 +87,28 @@ class LessonController extends Controller
 
         $lesson->load('subchapter.chapter');
 
+        // Get all lessons in course ordered by chapter > subchapter > lesson order
+        $allLessons = Lesson::where('lessons.course_id', $lesson->course_id)
+            ->join('subchapters', 'lessons.subchapter_id', '=', 'subchapters.id')
+            ->join('chapters', 'subchapters.chapter_id', '=', 'chapters.id')
+            ->orderBy('chapters.order')
+            ->orderBy('subchapters.order')
+            ->orderBy('lessons.order')
+            ->select('lessons.id')
+            ->pluck('id')
+            ->toArray();
+
+        $currentIndex = array_search($lesson->id, $allLessons);
+        $prevLessonId = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
+        $nextLessonId = $currentIndex < count($allLessons) - 1 ? $allLessons[$currentIndex + 1] : null;
+
         return Inertia::render('Teacher/Lessons/Edit', [
             'lesson' => $lesson,
             'course' => $lesson->course,
             'chapter' => $lesson->subchapter->chapter,
             'subchapter' => $lesson->subchapter,
+            'prevLessonId' => $prevLessonId,
+            'nextLessonId' => $nextLessonId,
         ]);
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CourseController;
@@ -88,6 +89,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('course-grades', [CourseGradeController::class, 'store'])->name('course-grades.store');
         Route::delete('course-grades/{courseGrade}', [CourseGradeController::class, 'destroy'])->name('course-grades.destroy');
     });
+
+    // Image upload (teachers + admins)
+    Route::post('upload-image', [ImageUploadController::class, 'store'])->name('upload-image');
 
     // Teacher routes
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
