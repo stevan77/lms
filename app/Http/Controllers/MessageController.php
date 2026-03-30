@@ -187,7 +187,8 @@ class MessageController extends Controller
         $grades = collect();
 
         if ($user->role === 'teacher') {
-            $assignments = $user->teachingAssignments()->with(['grade.students', 'course'])->get();
+            $assignments = $user->teachingAssignments()->with(['grade.students', 'course'])->get()
+                ->filter(fn ($cg) => $cg->grade && $cg->course);
             $grades = $assignments->map(fn ($cg) => [
                 'id' => $cg->grade->id,
                 'name' => $cg->course->name . ' - ' . $cg->grade->name,
