@@ -470,7 +470,7 @@ const isActive = (name, attrs = {}) => editor.value?.isActive(name, attrs);
 .tiptap code { @apply bg-gray-100 text-pink-600 px-1.5 py-0.5 rounded text-sm font-mono; }
 .tiptap pre code { @apply bg-transparent text-inherit p-0; }
 .tiptap a { @apply text-indigo-600 underline hover:text-indigo-800; }
-.tiptap img { @apply rounded-lg max-w-full my-3; }
+.tiptap img { @apply rounded-lg max-w-full my-3 block mx-auto; }
 .tiptap mark { @apply bg-yellow-200 px-0.5 rounded; }
 .tiptap hr { @apply my-4 border-gray-200; }
 

@@ -14,6 +14,22 @@ class ImageUploadController extends Controller
         ]);
 
         $file = $request->file('image');
+
+        $dir = public_path('images/lessons');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        // GIF fajlove sacuvaj direktno (cuvaju animaciju)
+        if (strtolower($file->getClientOriginalExtension()) === 'gif') {
+            $filename = Str::random(16) . '.gif';
+            $file->move($dir, $filename);
+
+            return response()->json([
+                'url' => '/images/lessons/' . $filename,
+            ]);
+        }
+
         $image = imagecreatefromstring(file_get_contents($file->getRealPath()));
 
         if (!$image) {
@@ -33,11 +49,6 @@ class ImageUploadController extends Controller
             imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
             imagedestroy($image);
             $image = $resized;
-        }
-
-        $dir = public_path('images/lessons');
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
         }
 
         $filename = Str::random(16) . '.webp';

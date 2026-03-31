@@ -39,6 +39,25 @@ class LessonController extends Controller
         ]);
     }
 
+    public function preview(Request $request, Course $course): Response
+    {
+        $assignments = CourseGrade::where('course_id', $course->id)
+            ->where('teacher_id', $request->user()->id)
+            ->get();
+
+        abort_if($assignments->isEmpty(), 403);
+
+        $chapters = $course->chapters()
+            ->with(['subchapters.lessons' => fn ($q) => $q->orderBy('order')])
+            ->orderBy('order')
+            ->get();
+
+        return Inertia::render('Teacher/Courses/Preview', [
+            'course' => $course,
+            'chapters' => $chapters,
+        ]);
+    }
+
     public function create(Request $request, Subchapter $subchapter): Response
     {
         $chapter = $subchapter->chapter;

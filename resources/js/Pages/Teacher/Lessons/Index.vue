@@ -21,6 +21,40 @@ const props = defineProps({
 // Local mutable copy of chapters for drag & drop
 const localChapters = ref(JSON.parse(JSON.stringify(props.chapters)));
 
+// Collapse state — all open by default
+const openChapters = ref(new Set(props.chapters.map(c => c.id)));
+const openSubchapters = ref(new Set(props.chapters.flatMap(c => (c.subchapters || []).map(s => s.id))));
+
+const toggleChapter = (id) => {
+    if (openChapters.value.has(id)) {
+        openChapters.value.delete(id);
+    } else {
+        openChapters.value.add(id);
+    }
+};
+
+const toggleSubchapter = (id) => {
+    if (openSubchapters.value.has(id)) {
+        openSubchapters.value.delete(id);
+    } else {
+        openSubchapters.value.add(id);
+    }
+};
+
+const allExpanded = ref(true);
+const toggleAll = () => {
+    if (allExpanded.value) {
+        openChapters.value.clear();
+        openSubchapters.value.clear();
+    } else {
+        localChapters.value.forEach(c => {
+            openChapters.value.add(c.id);
+            (c.subchapters || []).forEach(s => openSubchapters.value.add(s.id));
+        });
+    }
+    allExpanded.value = !allExpanded.value;
+};
+
 const saveOrder = (type, ids) => {
     router.post(route('teacher.reorder'), { type, ids }, {
         preserveScroll: true,
@@ -131,6 +165,15 @@ const stripHtml = (html) => html?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <a :href="route('teacher.courses.preview', course.id)" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.64 0 8.577 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.64 0-8.577-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        {{ t('Student View') }}
+                    </a>
+                    <button @click="toggleAll" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-gray-600 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors">
+                        <svg v-if="allExpanded" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>
+                        <svg v-else class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
+                        {{ allExpanded ? t('Collapse All') : t('Expand All') }}
+                    </button>
                     <Link v-for="g in grades" :key="g.course_grade_id" :href="route('teacher.progress.index', g.course_grade_id)"
                         class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
                     >
@@ -153,23 +196,25 @@ const stripHtml = (html) => html?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').
             <template #item="{ element: chapter, index: ci }">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200/60 overflow-hidden">
                     <!-- Chapter header -->
-                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-5 py-3 flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-5 py-3 flex items-center justify-between cursor-pointer" @click="toggleChapter(chapter.id)">
                         <div class="flex items-center gap-3 flex-1 min-w-0">
-                            <span class="chapter-drag-handle cursor-grab active:cursor-grabbing flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 text-white text-xs font-bold hover:bg-white/30 transition-colors" :title="t('Drag to reorder')">
+                            <span class="chapter-drag-handle cursor-grab active:cursor-grabbing flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 text-white text-xs font-bold hover:bg-white/30 transition-colors" :title="t('Drag to reorder')" @click.stop>
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
                                 </svg>
                             </span>
+                            <svg :class="['w-4 h-4 text-white/70 transition-transform duration-200', openChapters.has(chapter.id) ? 'rotate-90' : '']" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                             <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 text-white text-xs font-bold">{{ ci + 1 }}</span>
                             <template v-if="editingChapter === chapter.id">
-                                <input v-model="editTitle" @keydown.enter="saveChapter(chapter)" @keydown.escape="editingChapter = null" class="flex-1 px-2 py-1 text-sm rounded bg-white/20 text-white placeholder-white/60 border-0 focus:ring-2 focus:ring-white/50" autofocus />
-                                <button @click="saveChapter(chapter)" class="text-white/80 hover:text-white text-xs px-2">OK</button>
+                                <input v-model="editTitle" @keydown.enter="saveChapter(chapter)" @keydown.escape="editingChapter = null" @click.stop class="flex-1 px-2 py-1 text-sm rounded bg-white/20 text-white placeholder-white/60 border-0 focus:ring-2 focus:ring-white/50" autofocus />
+                                <button @click.stop="saveChapter(chapter)" class="text-white/80 hover:text-white text-xs px-2">OK</button>
                             </template>
                             <template v-else>
                                 <h2 class="text-base font-semibold text-white truncate">{{ chapter.title }}</h2>
+                                <span class="text-xs text-white/50 ml-1">({{ chapter.subchapters?.length || 0 }})</span>
                             </template>
                         </div>
-                        <div class="flex items-center gap-1 ml-2">
+                        <div class="flex items-center gap-1 ml-2" @click.stop>
                             <button @click="startEditChapter(chapter)" class="p-1.5 text-white/60 hover:text-white hover:bg-white/10 rounded transition-colors" :title="t('Edit')">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
                             </button>
@@ -180,7 +225,7 @@ const stripHtml = (html) => html?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').
                     </div>
 
                     <!-- Subchapters -->
-                    <div class="divide-y divide-gray-100">
+                    <div v-show="openChapters.has(chapter.id)" class="divide-y divide-gray-100">
                         <draggable
                             v-model="chapter.subchapters"
                             item-key="id"
@@ -192,23 +237,25 @@ const stripHtml = (html) => html?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').
                             <template #item="{ element: sub, index: si }">
                                 <div>
                                     <!-- Subchapter header -->
-                                    <div class="bg-gray-50 px-5 py-2.5 flex items-center justify-between border-b border-gray-100">
+                                    <div class="bg-gray-50 px-5 py-2.5 flex items-center justify-between border-b border-gray-100 cursor-pointer" @click="toggleSubchapter(sub.id)">
                                         <div class="flex items-center gap-2 flex-1 min-w-0">
-                                            <span class="subchapter-drag-handle cursor-grab active:cursor-grabbing p-0.5 text-gray-400 hover:text-gray-600 transition-colors" :title="t('Drag to reorder')">
+                                            <span class="subchapter-drag-handle cursor-grab active:cursor-grabbing p-0.5 text-gray-400 hover:text-gray-600 transition-colors" :title="t('Drag to reorder')" @click.stop>
                                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
                                                 </svg>
                                             </span>
+                                            <svg :class="['w-3.5 h-3.5 text-gray-400 transition-transform duration-200', openSubchapters.has(sub.id) ? 'rotate-90' : '']" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                                             <span class="text-xs font-mono text-gray-400">{{ ci + 1 }}.{{ si + 1 }}</span>
                                             <template v-if="editingSubchapter === sub.id">
-                                                <input v-model="editTitle" @keydown.enter="saveSubchapter(sub)" @keydown.escape="editingSubchapter = null" class="flex-1 px-2 py-1 text-sm rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500" autofocus />
-                                                <button @click="saveSubchapter(sub)" class="text-indigo-600 text-xs px-2">OK</button>
+                                                <input v-model="editTitle" @keydown.enter="saveSubchapter(sub)" @keydown.escape="editingSubchapter = null" @click.stop class="flex-1 px-2 py-1 text-sm rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500" autofocus />
+                                                <button @click.stop="saveSubchapter(sub)" class="text-indigo-600 text-xs px-2">OK</button>
                                             </template>
                                             <template v-else>
                                                 <h3 class="text-sm font-semibold text-gray-700 truncate">{{ sub.title }}</h3>
+                                                <span class="text-xs text-gray-400 ml-1">({{ sub.lessons?.length || 0 }})</span>
                                             </template>
                                         </div>
-                                        <div class="flex items-center gap-1 ml-2">
+                                        <div class="flex items-center gap-1 ml-2" @click.stop>
                                             <Link :href="route('teacher.lessons.create', sub.id)" class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-indigo-600 hover:bg-indigo-50 rounded transition-colors">
                                                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                                 {{ t('Lesson') }}
@@ -224,6 +271,7 @@ const stripHtml = (html) => html?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').
 
                                     <!-- Lessons -->
                                     <draggable
+                                        v-show="openSubchapters.has(sub.id)"
                                         v-model="sub.lessons"
                                         item-key="id"
                                         handle=".lesson-drag-handle"
@@ -284,7 +332,7 @@ const stripHtml = (html) => html?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').
                                     </draggable>
 
                                     <!-- Empty subchapter -->
-                                    <div v-if="!sub.lessons?.length" class="px-5 py-4 text-center text-xs text-gray-400">
+                                    <div v-if="!sub.lessons?.length && openSubchapters.has(sub.id)" class="px-5 py-4 text-center text-xs text-gray-400">
                                         {{ t('No lessons yet') }} —
                                         <Link :href="route('teacher.lessons.create', sub.id)" class="text-indigo-600 hover:underline">{{ t('Create First Lesson') }}</Link>
                                     </div>

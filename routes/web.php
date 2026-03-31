@@ -86,6 +86,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('courses', CourseController::class);
         Route::resource('teachers', TeacherController::class);
         Route::resource('students', StudentController::class);
+        Route::get('courses/{course}/export', [CourseController::class, 'export'])->name('courses.export');
+        Route::post('courses/{course}/export', [CourseController::class, 'exportDownload'])->name('courses.export.download');
+        Route::post('courses/{course}/import', [CourseController::class, 'import'])->name('courses.import');
+        Route::get('courses/{course}/structure', [CourseController::class, 'structure'])->name('courses.structure');
         Route::post('course-grades', [CourseGradeController::class, 'store'])->name('course-grades.store');
         Route::delete('course-grades/{courseGrade}', [CourseGradeController::class, 'destroy'])->name('course-grades.destroy');
     });
@@ -97,6 +101,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
         Route::get('submissions', [SubmissionController::class, 'all'])->name('submissions.all');
         Route::get('courses/{course}/lessons', [LessonController::class, 'index'])->name('lessons.index');
+        Route::get('courses/{course}/preview', [LessonController::class, 'preview'])->name('courses.preview');
         Route::get('subchapters/{subchapter}/lessons/create', [LessonController::class, 'create'])->name('lessons.create');
         Route::post('subchapters/{subchapter}/lessons', [LessonController::class, 'store'])->name('lessons.store');
         Route::get('lessons/{lesson}/edit', [LessonController::class, 'edit'])->name('lessons.edit');

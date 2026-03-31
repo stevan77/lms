@@ -208,7 +208,7 @@ const setHtmlRef = (el, index) => {
 .lesson-content code { @apply bg-gray-100 text-pink-600 px-1.5 py-0.5 rounded text-sm font-mono; }
 .lesson-content pre code { @apply bg-transparent text-inherit p-0; }
 .lesson-content a { @apply text-indigo-600 underline; }
-.lesson-content img { @apply rounded-lg max-w-full my-3; }
+.lesson-content img { @apply rounded-lg max-w-full my-3 block mx-auto; }
 .lesson-content mark { @apply bg-yellow-200 px-0.5 rounded; }
 .lesson-content table { @apply border-collapse w-full my-3; }
 .lesson-content th { @apply bg-gray-100 border border-gray-300 px-3 py-2 text-left font-semibold text-sm; }
